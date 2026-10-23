@@ -1,0 +1,18 @@
+[
+  {
+    "title": "Replace with your property's title",
+    "description": "Replace with accurate details about your property.",
+    "price": 0,
+    "city": "City",
+    "area": "Neighborhood",
+    "pincode": "000000",
+    "propertyType": "flat",
+    "bhk": "2",
+    "bathrooms": 2,
+    "areaSize": 1000,
+    "furnishing": "unfurnished",
+    "status": "sale",
+    "amenities": [],
+    "images": []
+  }
+]
