@@ -44,26 +44,33 @@ Vite serves the site at `http://localhost:5173`; the API listens on `http://loca
 
 ## Accounts and administration
 
-Registration supports buyer and seller accounts. Create the first admin account through a trusted database operation rather than public registration. Admins can review listings, verify them, manage accounts, set temporary passwords, process contact requests, and review listing reports at `/admin`.
-
-Forgotten passwords require an administrator to verify the account and set a temporary password. The user must change it after signing in.
-
-## Import genuine listings
-
-Only import real properties you have permission to list. Copy `backend/data/properties.import.example.json`, replace its placeholder with accurate details, then run from `backend`:
-
-```sh
-npm run import:properties -- --seller <seller-user-id> data/my-properties.json
-```
-
-Use the seller's `_id` returned during registration or login. The importer validates the seller and listing data, then adds records without modifying existing listings.
+Registration supports buyer and seller accounts. Create the first admin account through a trusted database operation rather than public registration. Admins can review listings, verify them, manage accounts, set temporary passwords, process contact requests, and review listing reports at `/admin`. Users must change temporary passwords after signing in.
 
 ## Project structure
 
-- `frontend/src/App.jsx`: frontend routes and user flows
-- `frontend/src/index.css`: responsive styling and motion
-- `frontend/src/pages/admin/AdminDashboard.jsx`: admin sections
-- `backend/server.js`: Express setup, API routes, and MongoDB connection
-- `backend/routes/`: API endpoints
-- `backend/models/`: MongoDB schemas
-- `backend/scripts/import-properties.js`: listing import utility
+```text
+Tsuki/
+├── backend/
+│   ├── middleware/    # Request middleware
+│   ├── models/        # MongoDB models
+│   ├── routes/        # API route handlers
+│   └── utils/         # Backend helpers
+├── frontend/
+│   └── src/
+│       ├── app/       # Route table, shell, and shared providers
+│       ├── assets/    # Images and other static source assets
+│       ├── features/  # Feature pages, dashboards, and components
+│       └── styles/    # Shared base styles and feature stylesheets
+├── eslint.config.js
+└── package.json       # Shared format and lint commands
+```
+
+### Frontend source map
+
+`frontend/src/main.jsx` boots the app and imports base and feature stylesheets. `app/App.jsx` owns the route table, and `app/Shell.jsx` contains the shared layout. App services are split into focused modules for the API, authentication, notifications, property tools, formatting, motion preferences, and chat updates. Feature route pages live in each feature's `pages/` folder; dashboards and shared components have their own named folders. See [`frontend/src/features/README.md`](frontend/src/features/README.md) for the feature map.
+
+### Code style
+
+The repository uses EditorConfig, Prettier, ESLint, and Stylelint. Install the root development tools with `npm install`, then use `npm run format` to format files, `npm run lint` to lint JavaScript/JSX and CSS, or `npm run format:check` to check formatting without changing files. Formatting uses two spaces, single quotes in JavaScript, semicolons, trailing commas, and a 100-character print width.
+
+Use names and folder structure to make a file's purpose clear. Add brief comments for non-obvious behavior or decisions; avoid comments that only restate the code.

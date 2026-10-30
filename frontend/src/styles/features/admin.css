@@ -1,0 +1,230 @@
+.admin-page {
+  max-width: 1200px;
+}
+.admin-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 25px;
+}
+.admin-tabs a {
+  padding: 12px 16px;
+  color: var(--secondary);
+  font-size: 12px;
+  border-bottom: 2px solid transparent;
+}
+.admin-tabs a:hover,
+.admin-tabs a.active {
+  color: var(--gold);
+}
+.admin-tabs a.active {
+  border-color: var(--gold);
+}
+.admin-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 13px;
+  margin-bottom: 25px;
+}
+.admin-stat,
+.admin-panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+.admin-stat {
+  padding: 20px;
+  min-height: 130px;
+}
+.admin-stat > span,
+.admin-stat > strong,
+.admin-stat > small {
+  display: block;
+}
+.admin-stat > span {
+  font-size: 11px;
+  color: var(--secondary);
+}
+.admin-stat > strong {
+  font: 30px var(--serif);
+  color: var(--gold);
+  margin: 10px 0 6px;
+}
+.admin-stat > small {
+  font-size: 10px;
+  color: var(--muted);
+}
+.admin-panel {
+  padding: 22px;
+  margin-bottom: 24px;
+}
+.admin-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.admin-panel-heading h2 {
+  font: 24px var(--serif);
+  margin: 0 0 5px;
+}
+.admin-panel-heading p {
+  color: var(--muted);
+  font-size: 11px;
+  margin: 0;
+}
+.admin-filters {
+  display: flex;
+  gap: 12px;
+  margin: 0 0 18px;
+}
+.admin-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 210px;
+  color: var(--muted);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+.admin-filters input,
+.admin-filters select,
+.admin-table select {
+  background: #0d1014;
+  color: var(--text);
+  border: 1px solid var(--line);
+  padding: 10px;
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: 12px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.admin-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 11px;
+  min-width: 720px;
+}
+.admin-table th {
+  color: var(--muted);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+.admin-table th,
+.admin-table td {
+  padding: 13px 11px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+.admin-table td {
+  color: var(--secondary);
+}
+.admin-table td:first-child {
+  color: var(--text);
+  min-width: 190px;
+}
+.admin-table td:first-child a {
+  color: var(--text);
+}
+.admin-table td:first-child a:hover {
+  color: var(--gold);
+}
+.admin-table td small {
+  display: block;
+  color: var(--muted);
+  font-size: 9px;
+  margin-top: 5px;
+}
+.admin-table select {
+  min-width: 105px;
+}
+.admin-badge {
+  display: inline-flex;
+  padding: 6px 8px;
+  border: 1px solid #705a35;
+  color: var(--gold);
+  font-size: 9px;
+  white-space: nowrap;
+}
+.admin-badge.verified {
+  border-color: #cbb98a66;
+  color: #e3d4b3;
+  background: #11120f;
+}
+.admin-actions {
+  display: flex;
+  gap: 7px;
+  white-space: nowrap;
+}
+.button-danger {
+  background: transparent;
+  border-color: #743b37;
+  color: #f0aaa0;
+}
+.button-danger:hover {
+  background: #311c1b;
+  border-color: #a34a42;
+  color: #ffd2ca;
+}
+.admin-empty {
+  padding: 36px 15px;
+  text-align: center;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+}
+@media (max-width: 800px) {
+  .admin-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .admin-panel {
+    padding: 16px;
+  }
+  .admin-filters {
+    flex-wrap: wrap;
+  }
+  .admin-filters label {
+    flex: 1;
+    min-width: 180px;
+  }
+}
+@media (max-width: 520px) {
+  .admin-stat-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .admin-stat {
+    padding: 14px;
+    min-height: 112px;
+  }
+  .admin-stat > strong {
+    font-size: 25px;
+  }
+  .admin-tabs a {
+    padding: 11px 12px;
+  }
+  .admin-panel-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .admin-filters {
+    flex-direction: column;
+  }
+  .admin-filters label {
+    min-width: 0;
+  }
+}
+.contact-message-cell {
+  white-space: pre-wrap;
+  max-width: 360px;
+  line-height: 1.6;
+}

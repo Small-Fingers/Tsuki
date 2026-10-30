@@ -5,7 +5,7 @@ import Property from '../models/property.model.js';
 import User from '../models/user.model.js';
 import Viewing from '../models/viewing.model.js';
 import { requireAuth } from '../middleware/auth.js';
-import { publishChatUpdate } from '../utils/chatEvents.js';
+import { publishChatUpdate } from '../utils/chat-events.js';
 import { buildSearchAlertQuery, normalizeFilters } from '../utils/search-alerts.js';
 
 const router = Router();
@@ -13,7 +13,8 @@ router.use(requireAuth);
 
 router.get('/', async (req, res, next) => {
   try {
-    if (!['buyer', 'seller'].includes(req.user.role)) return res.json({ notifications: [], unreadCount: 0 });
+    if (!['buyer', 'seller'].includes(req.user.role))
+      return res.json({ notifications: [], unreadCount: 0 });
     const userId = req.user._id;
     let seenAt = req.user.notificationsSeenAt;
     if (!seenAt) {
@@ -24,17 +25,28 @@ router.get('/', async (req, res, next) => {
     const chatQuery = { $or: [{ buyer: userId }, { seller: userId }] };
     const viewingQuery = req.user.role === 'seller' ? { seller: userId } : { buyer: userId };
     const [chats, viewings, reports] = await Promise.all([
-      Chat.find(chatQuery).populate('buyer seller', 'name').populate('property', 'title').sort({ updatedAt: -1 }),
-      Viewing.find(viewingQuery).populate('property', 'title').populate('buyer seller', 'name').sort({ updatedAt: -1 }).limit(200),
+      Chat.find(chatQuery)
+        .populate('buyer seller', 'name')
+        .populate('property', 'title')
+        .sort({ updatedAt: -1 }),
+      Viewing.find(viewingQuery)
+        .populate('property', 'title')
+        .populate('buyer seller', 'name')
+        .sort({ updatedAt: -1 })
+        .limit(200),
       req.user.role === 'buyer'
-        ? ListingReport.find({ reporter: userId, status: { $ne: 'pending' } }).populate('property', 'title').sort({ statusUpdatedAt: -1, updatedAt: -1 }).limit(100)
+        ? ListingReport.find({ reporter: userId, status: { $ne: 'pending' } })
+            .populate('property', 'title')
+            .sort({ statusUpdatedAt: -1, updatedAt: -1 })
+            .limit(100)
         : Promise.resolve([]),
     ]);
 
     const notifications = [];
     let unreadCount = 0;
     for (const chat of chats) {
-      const partner = String(chat.buyer?._id || chat.buyer) === String(userId) ? chat.seller : chat.buyer;
+      const partner =
+        String(chat.buyer?._id || chat.buyer) === String(userId) ? chat.seller : chat.buyer;
       for (const message of chat.messages || []) {
         if (String(message.sender?._id || message.sender) === String(userId)) continue;
         const sentAt = message.sentAt || chat.updatedAt;
@@ -61,10 +73,18 @@ router.get('/', async (req, res, next) => {
       const startsInMs = new Date(viewing.requestedFor).getTime() - Date.now();
       if (viewing.status === 'accepted' && startsInMs > 0 && startsInMs <= 24 * 60 * 60 * 1000) {
         type = 'reminder';
-        const startsIn = startsInMs < 60 * 60 * 1000 ? 'in less than an hour' : `in ${Math.ceil(startsInMs / (60 * 60 * 1000))} hours`;
+        const startsIn =
+          startsInMs < 60 * 60 * 1000
+            ? 'in less than an hour'
+            : `in ${Math.ceil(startsInMs / (60 * 60 * 1000))} hours`;
         title = 'Viewing coming up';
         body = `${viewing.property?.title || 'Your property viewing'} · ${startsIn} · ${new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(viewing.requestedFor))}`;
-        createdAt = new Date(Math.max(new Date(viewing.requestedFor).getTime() - 24 * 60 * 60 * 1000, new Date(viewing.updatedAt || viewing.createdAt).getTime()));
+        createdAt = new Date(
+          Math.max(
+            new Date(viewing.requestedFor).getTime() - 24 * 60 * 60 * 1000,
+            new Date(viewing.updatedAt || viewing.createdAt).getTime(),
+          ),
+        );
       } else if (req.user.role === 'seller' && viewing.status === 'pending') {
         title = 'New viewing request';
         body = `${viewing.buyer?.name || 'A buyer'} requested to view ${viewing.property?.title || 'your listing'}.`;
@@ -74,7 +94,8 @@ router.get('/', async (req, res, next) => {
         body = `${viewing.buyer?.name || 'The buyer'} cancelled a request for ${viewing.property?.title || 'your listing'}.`;
         createdAt = viewing.updatedAt;
       } else if (req.user.role === 'buyer' && ['accepted', 'declined'].includes(viewing.status)) {
-        title = viewing.status === 'accepted' ? 'Viewing request accepted' : 'Viewing request declined';
+        title =
+          viewing.status === 'accepted' ? 'Viewing request accepted' : 'Viewing request declined';
         body = `${viewing.property?.title || 'Your listing request'} · ${new Intl.DateTimeFormat('en', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(viewing.requestedFor))}`;
         createdAt = viewing.updatedAt;
       } else continue;
@@ -82,7 +103,15 @@ router.get('/', async (req, res, next) => {
       const unread = new Date(createdAt) > seenAt;
       if (!unread && new Date(createdAt) < recentAfter) continue;
       if (unread) unreadCount += 1;
-      notifications.push({ id: `viewing:${viewing._id}:${viewing.status}`, type, title, body, createdAt, href: '/viewings', unread });
+      notifications.push({
+        id: `viewing:${viewing._id}:${viewing.status}`,
+        type,
+        title,
+        body,
+        createdAt,
+        href: '/viewings',
+        unread,
+      });
     }
 
     for (const report of reports) {
@@ -132,7 +161,9 @@ router.get('/', async (req, res, next) => {
 
     notifications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     res.json({ notifications: notifications.slice(0, 100), unreadCount });
-  } catch (error) { next(error); }
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.post('/read-all', async (req, res, next) => {
@@ -141,12 +172,18 @@ router.post('/read-all', async (req, res, next) => {
     if (['buyer', 'seller'].includes(req.user.role)) {
       const chatQuery = { $or: [{ buyer: req.user._id }, { seller: req.user._id }] };
       const chats = await Chat.find(chatQuery).select('_id');
-      await Chat.updateMany(chatQuery, { $set: { 'messages.$[incoming].readAt': now } }, { arrayFilters: [{ 'incoming.sender': { $ne: req.user._id }, 'incoming.readAt': null }] });
+      await Chat.updateMany(
+        chatQuery,
+        { $set: { 'messages.$[incoming].readAt': now } },
+        { arrayFilters: [{ 'incoming.sender': { $ne: req.user._id }, 'incoming.readAt': null }] },
+      );
       await User.updateOne({ _id: req.user._id }, { $set: { notificationsSeenAt: now } });
       for (const chat of chats) publishChatUpdate([req.user._id], chat._id);
     }
     res.json({ success: true, notificationsSeenAt: now });
-  } catch (error) { next(error); }
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default router;

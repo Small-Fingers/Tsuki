@@ -5,7 +5,9 @@ import { fileURLToPath } from 'node:url';
 export const imageStorageDir = resolve(dirname(fileURLToPath(import.meta.url)), '../uploads');
 await mkdir(imageStorageDir, { recursive: true });
 
-const imageFilenamePattern = /^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}\.(?:jpg|png|webp|avif)$/i;
+// Only delete generated UUID filenames with supported extensions; never accept arbitrary paths.
+const imageFilenamePattern =
+  /^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}\.(?:jpg|png|webp|avif)$/i;
 
 export function isStoredImageFilename(filename) {
   return typeof filename === 'string' && imageFilenamePattern.test(filename);
@@ -28,7 +30,11 @@ export function propertyImageFilenames(property) {
 
 export async function deleteImageFiles(filenames = []) {
   const safeNames = [...new Set(filenames)].filter(isStoredImageFilename);
-  const results = await Promise.allSettled(safeNames.map((filename) => unlink(resolve(imageStorageDir, filename))));
-  const failure = results.find((result) => result.status === 'rejected' && result.reason?.code !== 'ENOENT');
+  const results = await Promise.allSettled(
+    safeNames.map((filename) => unlink(resolve(imageStorageDir, filename))),
+  );
+  const failure = results.find(
+    (result) => result.status === 'rejected' && result.reason?.code !== 'ENOENT',
+  );
   if (failure) throw failure.reason;
 }

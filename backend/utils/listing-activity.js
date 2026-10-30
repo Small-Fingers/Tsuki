@@ -7,6 +7,7 @@ export function utcDay(date = new Date()) {
 }
 
 export async function recordListingActivity(propertyId, sellerId, field, amount = 1) {
+  // Keep updates limited to known counters so callers cannot write arbitrary model fields.
   if (!activityFields.has(field) || amount <= 0) return;
   const date = utcDay();
   try {
